@@ -133,17 +133,11 @@ function buildPeople(people) {
 }
 
 async function handleSelectPerson(ev) {
-  console.log("HAndle");
   const li = ev.target.closest(".person");
-  console.log("li " + li);
   const id = li ? li.getAttribute("data-id") : null;
-  console.log("id " + id);
   if (id) {
-    console.log("IN");
-    console.log(ev.target);
     selectedPersonId = id;
     if (ev.target.classList.contains("edit")) {
-      console.log("edit");
       showOverlay();
       let docRef = doc(collection(db, "people"), selectedPersonId);
       const docSnap = await getDoc(docRef);
@@ -264,10 +258,14 @@ function showPerson(person) {
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
     let personName = person["name"].toLowerCase();
     li = `<li data-id="${person.id}" data-name="${personName}" class="person">
+            <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
-            <button class="btnEditPerson">Edit</button>
+            </div>
+            <div class="editDelBtns">
+            <button class="edit btnEditPerson">Edit</button>
             <button class="btnDeletePerson">Delete</button>
+            </div>
           </li>`;
     document.querySelector("ul.person-list").innerHTML += li;
   }
