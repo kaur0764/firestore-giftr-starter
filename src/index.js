@@ -8,6 +8,7 @@ import {
   where,
   addDoc,
   updateDoc,
+  getDoc,
   onSnapshot,
 } from "firebase/firestore";
 
@@ -52,7 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("btnAddPerson")
     .addEventListener("click", showOverlay);
-  document.getElementById("btnSaveIdea").addEventListener("click", showOverlay);
+  document
+    .getElementById("btnAddPerson")
+    .addEventListener("click", showOverlay);
 
   document
     .getElementById("btnSavePerson")
@@ -77,14 +80,14 @@ function hideOverlay(ev) {
 }
 function showOverlay(ev) {
   let id;
+  let target = "";
   if (ev) {
     ev.preventDefault();
-    id = ev.target.id === "btnAddPerson" ? "dlgPerson" : "dlgIdea";
-  } else {
-    id = "tellUser";
+    target = ev.target;
   }
+  id = target.id === "btnAddIdea" ? "dlgIdea" : "dlgPerson";
   document.querySelector(".overlay").classList.add("active");
-  //const id = ev.target.id === "btnAddPerson" ? "dlgPerson" : "dlgIdea";
+
   //TODO: check that person is selected before adding an idea
   document.getElementById(id).classList.add("active");
 }
@@ -116,8 +119,8 @@ function buildPeople(people) {
             <p class="dob">${dob}</p>
             </div>
             <div class="editDelBtns">
-            <button class="edit">Edit</button>
-            <button class="delete">Delete</button>
+            <button class="edit btnEditPerson">Edit</button>
+            <button class="btnDeletePerson">Delete</button>
             </div>
           </li>`;
     })
@@ -129,15 +132,24 @@ function buildPeople(people) {
   li.click();
 }
 
-function handleSelectPerson(ev) {
+async function handleSelectPerson(ev) {
+  console.log("HAndle");
   const li = ev.target.closest(".person");
+  console.log("li " + li);
   const id = li ? li.getAttribute("data-id") : null;
+  console.log("id " + id);
   if (id) {
+    console.log("IN");
+    console.log(ev.target);
     selectedPersonId = id;
     if (ev.target.classList.contains("edit")) {
-      //EDIT the doc using the id to get a docRef
-      //show the dialog form to EDIT the doc (same form as ADD)
-      //Load all the Person document details into the form from docRef
+      console.log("edit");
+      showOverlay();
+      let docRef = doc(collection(db, "people"), selectedPersonId);
+      const docSnap = await getDoc(docRef);
+      document.getElementById("name").value = docSnap.data().name;
+      document.getElementById("month").value = docSnap.data()["birth-month"];
+      document.getElementById("day").value = docSnap.data()["birth-day"];
     } else if (ev.target.classList.contains("delete")) {
       //DELETE the doc using the id to get a docRef
       //do a confirmation before deleting
@@ -243,8 +255,8 @@ function showPerson(person) {
             <p class="dob">${dob}</p>
             </div>
             <div class="editDelBtns">
-            <button class="edit">Edit</button>
-            <button class="delete">Delete</button>
+            <button class="edit btnEditPerson">Edit</button>
+            <button class="btnDeletePerson">Delete</button>
             </div
           </li>`;
   } else {
@@ -254,8 +266,8 @@ function showPerson(person) {
     li = `<li data-id="${person.id}" data-name="${personName}" class="person">
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
-            <button class="edit">Edit</button>
-            <button class="delete">Delete</button>
+            <button class="btnEditPerson">Edit</button>
+            <button class="btnDeletePerson">Delete</button>
           </li>`;
     document.querySelector("ul.person-list").innerHTML += li;
   }
@@ -272,7 +284,9 @@ function tellUser(msg, err) {
           <p>${msg}</p>
           <button id="btnOk">Ok</button>`;
   }
-  showOverlay();
+  // showOverlay();
+  document.querySelector(".overlay").classList.add("active");
+  document.getElementById("tellUser").classList.add("active");
   document.getElementById("btnOk").addEventListener("click", hideOverlay);
 }
 
