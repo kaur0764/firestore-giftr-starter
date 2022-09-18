@@ -8,6 +8,7 @@ import {
   where,
   addDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -110,8 +111,14 @@ function buildPeople(people) {
       return `<li data-id="${person.id}" data-name="${person[
         "name"
       ].toLowerCase()}" class="person">
+            <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
+            </div>
+            <div class="editDelBtns">
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
+            </div>
           </li>`;
     })
     .join("");
@@ -231,8 +238,14 @@ function showPerson(person) {
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
     let personName = person["name"].toLowerCase();
     li.outerHTML = `<li data-id="${person.id}" data-name="${personName}" class="person">
+            <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
+            </div>
+            <div class="editDelBtns">
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
+            </div
           </li>`;
   } else {
     //add to screen
@@ -241,6 +254,8 @@ function showPerson(person) {
     li = `<li data-id="${person.id}" data-name="${personName}" class="person">
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
           </li>`;
     document.querySelector("ul.person-list").innerHTML += li;
   }

@@ -209,8 +209,35 @@ dialog button {
   background-color: var(--light-orange);
 }
 
+li button {
+  margin: 0.2rem 2rem;
+  width: 7rem;
+  height: 1.5rem;
+  padding: 0.1rem 2rem;
+  border: 1px solid var(--dark-orange);
+  background-color: #fff;
+  color: var(--dark-orange);
+  border-radius: var(--radii);
+  cursor: pointer;
+}
+
+li{
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: flex-start;
+}
+
+.editDelBtns{
+  flex-basis: 50%;
+  flex-grow: 0;
+  flex-shrink: 1;
+  justify-self: flex-end;
+}
+
 #btnOk{
   margin: 0 auto;
   display: block;
   margin-bottom: 1rem;
 }
+
