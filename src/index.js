@@ -204,6 +204,7 @@ async function savePerson(ev) {
     if (li) {
       const updateDocRef = doc(db, "people", li.dataset.id);
       await updateDoc(updateDocRef, person);
+      person.id = li.dataset.id;
       hideOverlay();
       tellUser("Updated the database");
     } else {
@@ -223,11 +224,13 @@ async function savePerson(ev) {
 }
 
 function showPerson(person) {
-  let li = document.getElementById(person.id);
+  // let li = document.getElementById(person.id);
+  let li = document.querySelector(`[data-id="${person.id}"]`);
   if (li) {
     //update on screen
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
-    li.outerHTML = `<li data-id="${person.id}" class="person">
+    let personName = person["name"].toLowerCase();
+    li.outerHTML = `<li data-id="${person.id}" data-name="${personName}" class="person">
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
           </li>`;
