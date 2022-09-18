@@ -56,7 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("btnSavePerson")
     .addEventListener("click", savePerson);
-  // document.getElementById("btnSaveIdea").addEventListener("click", saveIdea);
+
+  document.getElementById("btnAddIdea").addEventListener("click", showOverlay);
+  document.getElementById("btnSaveIdea").addEventListener("click", saveGift);
 
   document
     .querySelector(".person-list")
@@ -153,12 +155,11 @@ async function getIdeas(id) {
   const querySnapshot = await getDocs(docs);
   const ideas = [];
   querySnapshot.forEach((doc) => {
-    //work with the resulting docs
     const data = doc.data();
     const id = doc.id;
     ideas.push({
       id,
-      title: data.idea,
+      title: data.title,
       location: data.location,
       bought: data.bought,
       person_id: data["person-id"].id,
@@ -184,7 +185,7 @@ function buildIdeas(ideas) {
       .join("");
   } else {
     ul.innerHTML =
-      '<li class="idea"><p></p><p>No Gift Ideas for selected person.</p></li>'; //clear in case there are no records to shows
+      '<li class="idea"><p></p><p>No Gift Ideas for selected person.</p></li>';
   }
 }
 
@@ -224,7 +225,6 @@ async function savePerson(ev) {
 }
 
 function showPerson(person) {
-  // let li = document.getElementById(person.id);
   let li = document.querySelector(`[data-id="${person.id}"]`);
   if (li) {
     //update on screen
@@ -257,31 +257,32 @@ function tellUser(msg, err) {
           <p>${msg}</p>
           <button id="btnOk">Ok</button>`;
   }
-  // switch (action) {
-  //   case "update":
-  //     dlg.innerHTML = `<h2>Successful!</h2>
-  //         <p>Updated the database</p>
-  //         <button id="btnOk">Ok</button>`;
-  //     break;
-  //   case "error":
-  //     dlg.innerHTML = `<h2>Failed!</h2>
-  //       <p> Error adding document </p>
-  //       <button id="btnOk">Ok</button>`;
-  //     break;
-  //   default:
-  //     dlg.innerHTML = `<h2>Successful!</h2>
-  //       <p> <span style="color:#ffcb2a">${person}</span> &nbsp; added to database</p>
-  //       <button id="btnOk">Ok</button>`;
-  // }
-  // if (person) {
-  //   dlg.innerHTML = `<h2>Successful!</h2>
-  //         <p> <span style="color:#ffcb2a">${person}</span> &nbsp; added to database</p>
-  //         <button id="btnOk">Ok</button>`;
-  // } else {
-  //   dlg.innerHTML = `<h2>Failed!</h2>
-  //         <p> Error adding document </p>
-  //         <button id="btnOk">Ok</button>`;
-  // }
   showOverlay();
   document.getElementById("btnOk").addEventListener("click", hideOverlay);
+}
+
+async function saveGift(ev) {
+  let title = document.getElementById("title").value;
+  let location = document.getElementById("location").value;
+  if (!title || !location) return; //form needs more info
+  const personRef = doc(db, `/people/${selectedPersonId}`);
+  const idea = {
+    title,
+    location,
+    "person-id": personRef,
+  };
+
+  try {
+    const docRef = await addDoc(collection(db, "gift-ideas"), idea);
+    idea.id = docRef.id;
+    document.getElementById("title").value = "";
+    document.getElementById("location").value = "";
+    hideOverlay();
+    tellUser("Gift added to the database");
+    getIdeas(selectedPersonId);
+  } catch (err) {
+    console.error("Error adding document: ", err);
+    tellUser("Error adding document", err);
+  }
+  //TODO: update this function to work as an UPDATE method too
 }
