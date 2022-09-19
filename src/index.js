@@ -9,6 +9,7 @@ import {
   addDoc,
   setDoc,
   getDoc,
+  deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
 
@@ -77,6 +78,8 @@ function hideOverlay(ev) {
   document
     .querySelectorAll(".overlay dialog")
     .forEach((dialog) => dialog.classList.remove("active"));
+  let dlgHeading = document.querySelector(".dlgHeading");
+  dlgHeading.innerHTML = "Add Person";
 }
 function showOverlay(ev) {
   let id;
@@ -137,17 +140,20 @@ async function handleSelectPerson(ev) {
   const id = li ? li.getAttribute("data-id") : null;
   if (id) {
     selectedPersonId = id;
-    let btnSave = document.querySelector("#btnSavePerson");
-    btnSave.dataset.id = id;
-    showOverlay();
     let docRef = doc(collection(db, "people"), selectedPersonId);
     const docSnap = await getDoc(docRef);
     if (ev.target.classList.contains("edit")) {
+      let dlgHeading = document.querySelector(".dlgHeading");
+      dlgHeading.innerHTML = "Edit Person";
+      let btnSave = document.querySelector("#btnSavePerson");
+      btnSave.dataset.id = id;
+      showOverlay();
       document.getElementById("name").value = docSnap.data().name;
       document.getElementById("month").value = docSnap.data()["birth-month"];
       document.getElementById("day").value = docSnap.data()["birth-day"];
     } else if (ev.target.classList.contains("delete")) {
       //DELETE the doc using the id to get a docRef
+      // await deleteDoc(doc(db, "collection-name", "document-id"));
       //do a confirmation before deleting
     } else {
       document.querySelector("li.selected")?.classList.remove("selected");
@@ -284,7 +290,6 @@ function tellUser(msg, err) {
           <p>${msg}</p>
           <button id="btnOk">Ok</button>`;
   }
-  // showOverlay();
   document.querySelector(".overlay").classList.add("active");
   document.getElementById("tellUser").classList.add("active");
   document.getElementById("btnOk").addEventListener("click", hideOverlay);
