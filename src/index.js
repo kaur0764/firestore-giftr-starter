@@ -73,7 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function hideOverlay(ev) {
-  if (ev) ev.preventDefault();
+  if (ev) {
+    ev.preventDefault();
+    if (ev.target.id == "btnCancelPerson") {
+      console.log("yes");
+      document.getElementById("name").value = "";
+      document.getElementById("month").value = "";
+      document.getElementById("day").value = "";
+    }
+  }
   document.querySelector(".overlay").classList.remove("active");
   document
     .querySelectorAll(".overlay dialog")
