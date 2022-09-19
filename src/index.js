@@ -25,7 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const people = [];
+let people = [];
 let months = [
   "January",
   "February",
@@ -49,14 +49,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("btnCancelIdea")
     .addEventListener("click", hideOverlay);
+  document.getElementById("btnNoDelete").addEventListener("click", hideOverlay);
   // document.querySelector(".overlay").addEventListener("click", hideOverlay);
 
   document
     .getElementById("btnAddPerson")
     .addEventListener("click", showOverlay);
   document
-    .getElementById("btnAddPerson")
-    .addEventListener("click", showOverlay);
+    .getElementById("btnYesDelete")
+    .addEventListener("click", deletePerson);
 
   document
     .getElementById("btnSavePerson")
@@ -76,7 +77,6 @@ function hideOverlay(ev) {
   if (ev) {
     ev.preventDefault();
     if (ev.target.id == "btnCancelPerson") {
-      console.log("yes");
       document.getElementById("name").value = "";
       document.getElementById("month").value = "";
       document.getElementById("day").value = "";
@@ -90,15 +90,17 @@ function hideOverlay(ev) {
   dlgHeading.innerHTML = "Add Person";
 }
 function showOverlay(ev) {
+  let overlay = document.querySelector(".overlay");
   let id;
-  let target = "";
   if (ev) {
     ev.preventDefault();
-    target = ev.target;
+    id = ev.target.id === "btnAddIdea" ? "dlgIdea" : "dlgPerson";
+  } else if (overlay.classList.contains("delete")) {
+    id = "dlgDeletePerson";
+  } else {
+    id = "dlgPerson";
   }
-  id = target.id === "btnAddIdea" ? "dlgIdea" : "dlgPerson";
   document.querySelector(".overlay").classList.add("active");
-
   //TODO: check that person is selected before adding an idea
   document.getElementById(id).classList.add("active");
 }
@@ -131,12 +133,11 @@ function buildPeople(people) {
             </div>
             <div class="editDelBtns">
             <button class="edit btnEditPerson">Edit</button>
-            <button class="btnDeletePerson">Delete</button>
+            <button class="delete btnDeletePerson">Delete</button>
             </div>
           </li>`;
     })
     .join("");
-
   selectedPersonId = people[0].id;
 
   let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
@@ -145,6 +146,7 @@ function buildPeople(people) {
 
 async function handleSelectPerson(ev) {
   const li = ev.target.closest(".person");
+  li.click();
   const id = li ? li.getAttribute("data-id") : null;
   if (id) {
     selectedPersonId = id;
@@ -160,9 +162,10 @@ async function handleSelectPerson(ev) {
       document.getElementById("month").value = docSnap.data()["birth-month"];
       document.getElementById("day").value = docSnap.data()["birth-day"];
     } else if (ev.target.classList.contains("delete")) {
-      //DELETE the doc using the id to get a docRef
-      // await deleteDoc(doc(db, "collection-name", "document-id"));
-      //do a confirmation before deleting
+      let overlay = document.querySelector(".overlay");
+      overlay.classList.add("delete");
+      showOverlay();
+      overlay.classList.remove("delete");
     } else {
       document.querySelector("li.selected")?.classList.remove("selected");
       li.classList.add("selected");
@@ -253,6 +256,14 @@ async function savePerson(ev) {
   }
 }
 
+async function deletePerson() {
+  await deleteDoc(doc(db, "people", selectedPersonId));
+  hideOverlay();
+  people = [];
+  getPeople();
+  tellUser("Person deleted");
+}
+
 function showPerson(person) {
   let li = document.querySelector(`[data-id="${person.id}"]`);
   if (li) {
@@ -266,7 +277,7 @@ function showPerson(person) {
             </div>
             <div class="editDelBtns">
             <button class="edit btnEditPerson">Edit</button>
-            <button class="btnDeletePerson">Delete</button>
+            <button class="delete btnDeletePerson">Delete</button>
             </div
           </li>`;
   } else {
@@ -280,7 +291,7 @@ function showPerson(person) {
             </div>
             <div class="editDelBtns">
             <button class="edit btnEditPerson">Edit</button>
-            <button class="btnDeletePerson">Delete</button>
+            <button class="delete btnDeletePerson">Delete</button>
             </div>
           </li>`;
     document.querySelector("ul.person-list").innerHTML += li;
