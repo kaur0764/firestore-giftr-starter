@@ -7,7 +7,7 @@ import {
   query,
   where,
   addDoc,
-  updateDoc,
+  setDoc,
   getDoc,
   onSnapshot,
 } from "firebase/firestore";
@@ -137,10 +137,12 @@ async function handleSelectPerson(ev) {
   const id = li ? li.getAttribute("data-id") : null;
   if (id) {
     selectedPersonId = id;
+    let btnSave = document.querySelector("#btnSavePerson");
+    btnSave.dataset.id = id;
+    showOverlay();
+    let docRef = doc(collection(db, "people"), selectedPersonId);
+    const docSnap = await getDoc(docRef);
     if (ev.target.classList.contains("edit")) {
-      showOverlay();
-      let docRef = doc(collection(db, "people"), selectedPersonId);
-      const docSnap = await getDoc(docRef);
       document.getElementById("name").value = docSnap.data().name;
       document.getElementById("month").value = docSnap.data()["birth-month"];
       document.getElementById("day").value = docSnap.data()["birth-day"];
@@ -203,7 +205,6 @@ function buildIdeas(ideas) {
 }
 
 async function savePerson(ev) {
-  //function called when user clicks save button from person dialog
   let name = document.getElementById("name").value;
   let month = document.getElementById("month").value;
   let day = document.getElementById("day").value;
@@ -214,11 +215,12 @@ async function savePerson(ev) {
     "birth-day": day,
   };
   try {
-    let li = document.querySelector(`[data-name="${name.toLowerCase()}"]`);
-    if (li) {
-      const updateDocRef = doc(db, "people", li.dataset.id);
-      await updateDoc(updateDocRef, person);
-      person.id = li.dataset.id;
+    let btnSavePerson = document.getElementById("btnSavePerson");
+    let id = btnSavePerson.dataset.id;
+    if (id) {
+      const docRef = doc(collection(db, "people"), id);
+      await setDoc(docRef, person);
+      person.id = id;
       hideOverlay();
       tellUser("Updated the database");
     } else {
