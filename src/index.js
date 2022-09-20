@@ -88,6 +88,8 @@ function hideOverlay(ev) {
     .forEach((dialog) => dialog.classList.remove("active"));
   let dlgHeading = document.querySelector(".dlgHeading");
   dlgHeading.innerHTML = "Add Person";
+  let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
+  li.click();
 }
 function showOverlay(ev) {
   let overlay = document.querySelector(".overlay");
@@ -191,7 +193,7 @@ async function getIdeas(id) {
     const id = doc.id;
     ideas.push({
       id,
-      title: data.title,
+      title: data.idea,
       location: data.location,
       bought: data.bought,
       person_id: data["person-id"].id,
@@ -315,19 +317,21 @@ function tellUser(msg, err) {
 }
 
 async function saveGift(ev) {
-  let title = document.getElementById("title").value;
+  let idea = document.getElementById("title").value;
   let location = document.getElementById("location").value;
   if (!title || !location) return; //form needs more info
   const personRef = doc(db, `/people/${selectedPersonId}`);
-  const idea = {
-    title,
+  const giftIdea = {
+    idea,
     location,
     "person-id": personRef,
   };
 
   try {
-    const docRef = await addDoc(collection(db, "gift-ideas"), idea);
-    idea.id = docRef.id;
+    const docRef = await addDoc(collection(db, "gift-ideas"), giftIdea);
+    console.log(docRef);
+    console.log(docRef.id);
+    giftIdea.id = docRef.id;
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
     hideOverlay();
