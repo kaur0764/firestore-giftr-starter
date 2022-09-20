@@ -41,6 +41,7 @@ let months = [
   "December",
 ];
 let selectedPersonId = null;
+// let selectedGiftId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -50,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btnCancelIdea")
     .addEventListener("click", hideOverlay);
   document.getElementById("btnNoDelete").addEventListener("click", hideOverlay);
-  // document.querySelector(".overlay").addEventListener("click", hideOverlay);
 
   document
     .getElementById("btnAddPerson")
@@ -70,6 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
     .querySelector(".person-list")
     .addEventListener("click", handleSelectPerson);
 
+  document
+    .querySelector(".idea-list")
+    .addEventListener("click", handleSelectGift);
+
   loadInitialData();
 });
 
@@ -86,8 +90,10 @@ function hideOverlay(ev) {
   document
     .querySelectorAll(".overlay dialog")
     .forEach((dialog) => dialog.classList.remove("active"));
-  let dlgHeading = document.querySelector(".dlgHeading");
-  dlgHeading.innerHTML = "Add Person";
+  let dlgPersonHeading = document.querySelector(".dlgPersonHeading");
+  dlgPersonHeading.innerHTML = "Add Person";
+  let dlgGiftHeading = document.querySelector(".dlgGiftHeading");
+  dlgGiftHeading.innerHTML = "Add Gift Idea";
   let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
   li.click();
 }
@@ -97,7 +103,11 @@ function showOverlay(ev) {
   if (ev) {
     ev.preventDefault();
     id = ev.target.id === "btnAddIdea" ? "dlgIdea" : "dlgPerson";
-  } else if (overlay.classList.contains("delete")) {
+  } else if (overlay.classList.contains("deletePerson")) {
+    id = "dlgDeletePerson";
+  } else if (overlay.classList.contains("editGift")) {
+    id = "dlgIdea";
+  } else if (overlay.classList.contains("deleteGift")) {
     id = "dlgDeletePerson";
   } else {
     id = "dlgPerson";
@@ -155,7 +165,7 @@ async function handleSelectPerson(ev) {
     let docRef = doc(collection(db, "people"), selectedPersonId);
     const docSnap = await getDoc(docRef);
     if (ev.target.classList.contains("edit")) {
-      let dlgHeading = document.querySelector(".dlgHeading");
+      let dlgHeading = document.querySelector(".dlgPersonHeading");
       dlgHeading.innerHTML = "Edit Person";
       let btnSave = document.querySelector("#btnSavePerson");
       btnSave.dataset.id = id;
@@ -165,9 +175,9 @@ async function handleSelectPerson(ev) {
       document.getElementById("day").value = docSnap.data()["birth-day"];
     } else if (ev.target.classList.contains("delete")) {
       let overlay = document.querySelector(".overlay");
-      overlay.classList.add("delete");
+      overlay.classList.add("deletePerson");
       showOverlay();
-      overlay.classList.remove("delete");
+      overlay.classList.remove("deletePerson");
     } else {
       document.querySelector("li.selected")?.classList.remove("selected");
       li.classList.add("selected");
@@ -328,18 +338,61 @@ async function saveGift(ev) {
     location,
     "person-id": personRef,
   };
-
   try {
-    const docRef = await addDoc(collection(db, "gift-ideas"), giftIdea);
-    giftIdea.id = docRef.id;
+    let btnSaveIdea = document.getElementById("btnSaveIdea");
+    let id = btnSaveIdea.dataset.id;
+    if (id) {
+      const docRef = doc(collection(db, "gift-ideas"), id);
+      await setDoc(docRef, giftIdea);
+      giftIdea.id = id;
+      hideOverlay();
+      tellUser("Updated the Gift Idea");
+    } else {
+      const docRef = await addDoc(collection(db, "gift-ideas"), giftIdea);
+      giftIdea.id = docRef.id;
+      hideOverlay();
+      tellUser("Gift idea added to the database");
+    }
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
-    hideOverlay();
-    tellUser("Gift added to the database");
     getIdeas(selectedPersonId);
   } catch (err) {
     console.error("Error adding document: ", err);
     tellUser("Error adding document", err);
   }
-  //TODO: update this function to work as an UPDATE method too
+}
+
+async function handleSelectGift(ev) {
+  const li = ev.target.closest(".idea");
+  li.click();
+  const id = li ? li.getAttribute("data-id") : null;
+  let overlay = document.querySelector(".overlay");
+  if (id) {
+    let docRef = doc(collection(db, "gift-ideas"), id);
+    const docSnap = await getDoc(docRef);
+    if (ev.target.classList.contains("edit")) {
+      let dlgHeading = document.querySelector(".dlgGiftHeading");
+      dlgHeading.innerHTML = "Edit Gift Idea";
+      let btnSave = document.querySelector("#btnSaveIdea");
+      btnSave.dataset.id = id;
+      overlay.classList.add("editGift");
+      showOverlay();
+      overlay.classList.remove("editGift");
+      document.getElementById("title").value = docSnap.data().idea;
+      document.getElementById("location").value = docSnap.data().location;
+    } else if (ev.target.classList.contains("delete")) {
+      let overlay = document.querySelector(".overlay");
+      overlay.classList.add("deleteGift");
+      showOverlay();
+      overlay.classList.remove("deleteGift");
+    } else {
+      document.querySelector("li.selected")?.classList.remove("selected");
+      li.classList.add("selected");
+      getIdeas(id);
+    }
+  } else {
+    //clicked a button not inside <li class="person">
+    //Show the dialog form to ADD the doc (same form as EDIT)
+    //showOverlay function can be called from here or with the click listener in DOMContentLoaded, not both
+  }
 }
