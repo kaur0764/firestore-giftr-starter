@@ -41,7 +41,7 @@ let months = [
   "December",
 ];
 let selectedPersonId = null;
-// let selectedGiftId = null;
+let selectedGiftId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btnAddPerson")
     .addEventListener("click", showOverlay);
   document
-    .getElementById("btnYesDelete")
+    .getElementById("btnYesDelPerson")
     .addEventListener("click", deletePerson);
 
   document
@@ -65,6 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("btnAddIdea").addEventListener("click", showOverlay);
   document.getElementById("btnSaveIdea").addEventListener("click", saveGift);
+  document
+    .getElementById("btnYesDelGift")
+    .addEventListener("click", deleteGift);
 
   document
     .querySelector(".person-list")
@@ -90,10 +93,12 @@ function hideOverlay(ev) {
   document
     .querySelectorAll(".overlay dialog")
     .forEach((dialog) => dialog.classList.remove("active"));
+
   let dlgPersonHeading = document.querySelector(".dlgPersonHeading");
   dlgPersonHeading.innerHTML = "Add Person";
   let dlgGiftHeading = document.querySelector(".dlgGiftHeading");
   dlgGiftHeading.innerHTML = "Add Gift Idea";
+
   let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
   li.click();
 }
@@ -108,7 +113,7 @@ function showOverlay(ev) {
   } else if (overlay.classList.contains("editGift")) {
     id = "dlgIdea";
   } else if (overlay.classList.contains("deleteGift")) {
-    id = "dlgDeletePerson";
+    id = "dlgDeleteGift";
   } else {
     id = "dlgPerson";
   }
@@ -362,12 +367,20 @@ async function saveGift(ev) {
   }
 }
 
+async function deleteGift() {
+  await deleteDoc(doc(db, "gift-ideas", selectedGiftId));
+  hideOverlay();
+  getIdeas(selectedPersonId);
+  tellUser("Gift idea deleted");
+}
+
 async function handleSelectGift(ev) {
   const li = ev.target.closest(".idea");
   li.click();
   const id = li ? li.getAttribute("data-id") : null;
   let overlay = document.querySelector(".overlay");
   if (id) {
+    selectedGiftId = id;
     let docRef = doc(collection(db, "gift-ideas"), id);
     const docSnap = await getDoc(docRef);
     if (ev.target.classList.contains("edit")) {
