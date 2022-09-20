@@ -101,7 +101,7 @@ ul {
   display: grid;
   /*usenamedgridareas*/
   grid-template-areas: 'tab top' 'tab bottom';
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 1fr 2fr 1fr;
   background-color: var(--very-light-orange);
   -webkit-border-radius: var(--radii);
   -moz-border-radius: var(--radii);
@@ -112,8 +112,10 @@ ul {
   font-size: 0.8rem;
   line-height: 1rem;
   font-weight: 100;
-  padding: 0.5rem;
+  padding: 2rem 0.5rem;
   color: #222;
+  border-radius: var(--radii);
+  background-color: #fff;
   grid-area: tab;
   align-self: center;
 }
@@ -123,12 +125,12 @@ ul {
 .idea-list .idea [type='checkbox'] {
   accent-color: var(--light-orange);
 }
+
 .idea-list p.title {
   font-size: 1.2rem;
   line-height: 2rem;
   padding: 0.5rem;
   color: #222;
-  background-color: #fff;
   border-top-right-radius: 0.3rem;
   grid-area: top;
 }
@@ -138,7 +140,6 @@ ul {
   padding: 0.5rem;
   font-weight: 100;
   color: #555;
-  background-color: #fff;
   border-bottom-right-radius: 0.3rem;
   grid-area: bottom;
 }
@@ -233,6 +234,17 @@ li{
   flex-grow: 0;
   flex-shrink: 1;
   justify-self: flex-end;
+}
+
+.btnEditGift.edit{
+align-self: end;
+margin-bottom: 0.5rem;
+}
+
+.btnEditGift,
+.btnDeleteGift{
+  margin: 0;
+  margin-right: 0.5rem;
 }
 
 #btnOk{

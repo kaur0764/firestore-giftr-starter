@@ -209,12 +209,14 @@ function buildIdeas(ideas) {
     ul.innerHTML = ideas
       .map((idea) => {
         return `<li class="idea" data-id="${idea.id}">
-                <label for="chk-${idea.id}"
-                  ><input type="checkbox" id="chk-${idea.id}" /> Bought</label
-                >
+
+                <label for="chk-${idea.id}">
+                <input type="checkbox" id="chk-${idea.id}"/> Bought</label>
                 <p class="title">${idea.title}</p>
                 <p class="location">${idea.location}</p>
-              </li>`;
+                <button class="edit btnEditGift">Edit</button>
+                <button class="delete btnDeleteGift">Delete</button>
+                </li>`;
       })
       .join("");
   } else {
@@ -329,8 +331,6 @@ async function saveGift(ev) {
 
   try {
     const docRef = await addDoc(collection(db, "gift-ideas"), giftIdea);
-    console.log(docRef);
-    console.log(docRef.id);
     giftIdea.id = docRef.id;
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
