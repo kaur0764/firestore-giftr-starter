@@ -253,3 +253,11 @@ margin-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
 
+.idea-list .noIdea,
+.person-list .noPerson{
+  border: 1px solid #222;
+  border-radius: var(--radii);
+  background-color: var(--very-light-orange);
+  margin: 1rem;
+  padding: 0.5rem 2rem;
+}

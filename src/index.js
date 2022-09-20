@@ -98,9 +98,10 @@ function hideOverlay(ev) {
   dlgPersonHeading.innerHTML = "Add Person";
   let dlgGiftHeading = document.querySelector(".dlgGiftHeading");
   dlgGiftHeading.innerHTML = "Add Gift Idea";
-
-  let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
-  li.click();
+  if (selectedPersonId) {
+    let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
+    li.click();
+  }
 }
 function showOverlay(ev) {
   let overlay = document.querySelector(".overlay");
@@ -138,12 +139,15 @@ async function getPeople() {
 
 function buildPeople(people) {
   let ul = document.querySelector("ul.person-list");
-  ul.innerHTML = people
-    .map((person) => {
-      const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
-      return `<li data-id="${person.id}" data-name="${person[
-        "name"
-      ].toLowerCase()}" class="person">
+  if (people.length) {
+    ul.innerHTML = people
+      .map((person) => {
+        const dob = `${months[person["birth-month"] - 1]} ${
+          person["birth-day"]
+        }`;
+        return `<li data-id="${person.id}" data-name="${person[
+          "name"
+        ].toLowerCase()}" class="person">
             <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
@@ -153,12 +157,16 @@ function buildPeople(people) {
             <button class="delete btnDeletePerson">Delete</button>
             </div>
           </li>`;
-    })
-    .join("");
-  selectedPersonId = people[0].id;
+      })
+      .join("");
+    selectedPersonId = people[0].id;
 
-  let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
-  li.click();
+    let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
+    li.click();
+  } else {
+    ul.innerHTML = '<li class="noPerson"><p>The People list is empty.</p></li>';
+    selectedPersonId = null;
+  }
 }
 
 async function handleSelectPerson(ev) {
@@ -236,7 +244,7 @@ function buildIdeas(ideas) {
       .join("");
   } else {
     ul.innerHTML =
-      '<li class="idea"><p></p><p>No Gift Ideas for selected person.</p></li>';
+      '<li class="noIdea"><p>No Gift Ideas for selected person.</p></li>';
   }
 }
 
@@ -301,6 +309,10 @@ function showPerson(person) {
           </li>`;
   } else {
     //add to screen
+    let noPersonMsg = document.querySelector(".noPerson");
+    if (noPersonMsg) {
+      noPersonMsg.parentElement.removeChild(noPersonMsg);
+    }
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
     let personName = person["name"].toLowerCase();
     li = `<li data-id="${person.id}" data-name="${personName}" class="person">
@@ -314,6 +326,11 @@ function showPerson(person) {
             </div>
           </li>`;
     document.querySelector("ul.person-list").innerHTML += li;
+    if (!selectedPersonId) {
+      selectedPersonId = person.id;
+      li = document.querySelector(`[data-id="${selectedPersonId}"]`);
+      li.click();
+    }
   }
 }
 
