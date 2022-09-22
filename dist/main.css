@@ -7,7 +7,8 @@
   --radii: 0.4rem;
   /* --light-pink: #fe2f6d; */
 }
-* ----------------- Type hierarchy ----------------- */ h1,
+* ----------------- Type hierarchy ----------------- */
+h1,
 h2,
 h3,
 h4,
@@ -273,13 +274,10 @@ dialog {
 dialog.active {
   display: block;
   margin: auto;
-  width: 80vw;
-  height: 60vh;
+    width: max-content;
+      height: auto;
 }
-dialog.active#tellUser{
-  width: max-content;
-height: auto;
-}
+
 dialog.active h2 {
   background-color: var(--light-pink);
   color: #fff;
@@ -370,3 +368,4 @@ margin-bottom: 0.5rem;
   margin: 1rem;
   padding: 0.5rem 2rem;
 }
+
