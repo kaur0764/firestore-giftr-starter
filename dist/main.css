@@ -1,8 +1,11 @@
 :root {
-  --dark-orange: #f5820d;
-  --light-orange: #ffcb2a;
-  --very-light-orange: #ffeb9a;
+  --very-dark-pink: #67152e;
+  --dark-pink: #841b3b;
+  --light-pink: #c55f7e;
+  --very-light-pink: #fa98b5;
+  --pale-pink: #f4c6d4;
   --radii: 0.4rem;
+  /* --light-pink: #fe2f6d; */
 }
 * {
   box-sizing: border-box;
@@ -22,19 +25,19 @@ main {
   padding: 1rem 4rem;
 }
 header {
-  background-color: var(--light-orange);
-  border-bottom: 0.1rem solid var(--dark-orange);
+  background-color: var(--light-pink);
+  border-bottom: 0.1rem solid var(--dark-pink);
 }
 header h1 {
   font-size: 4rem;
   font-weight: 500;
   color: #fff;
-  text-shadow: 2px 2px 2px var(--dark-orange);
+  text-shadow: 2px 2px 2px var(--dark-pink);
 }
 header h2 {
   font-size: 2.5rem;
   font-weight: 300;
-  color: var(--dark-orange);
+  color: #fff;
 }
 main {
   display: flex;
@@ -50,20 +53,20 @@ main > section {
 section.ideas {
   min-height: 100vh;
   padding-left: 1rem;
-  border-left: 1px solid var(--light-orange);
+  border-left: 1px solid var(--light-pink);
 }
 section h2 {
   font-size: 2rem;
-  color: var(--dark-orange);
+  color: var(--dark-pink);
   display: flex;
   justify-content: space-between;
 }
 section h2 > button {
   margin-right: 4rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--dark-orange);
-  background-color: #fff;
-  color: var(--dark-orange);
+  border: 1px solid var(--dark-pink);
+  background-color: var(--pale-pink);
+  color: var(--dark-pink);
   border-radius: var(--radii);
   cursor: pointer;
   -webkit-border-radius: var(--radii);
@@ -80,7 +83,7 @@ ul {
   cursor: pointer;
 }
 .person-list li.selected {
-  background-color: var(--light-orange);
+  background-color: var(--very-light-pink);
 }
 .person-list p.name {
   font-size: 1.2rem;
@@ -91,7 +94,7 @@ ul {
   font-size: 0.8rem;
   line-height: 1rem;
   font-weight: 100;
-  color: #777;
+  color: rgb(49, 49, 49);
 }
 
 .idea-list li.idea {
@@ -102,7 +105,7 @@ ul {
   /*usenamedgridareas*/
   grid-template-areas: 'tab top' 'tab bottom';
   grid-template-columns: 1fr 2fr 1fr;
-  background-color: var(--very-light-orange);
+  background-color: var(--very-light-pink);
   -webkit-border-radius: var(--radii);
   -moz-border-radius: var(--radii);
   -ms-border-radius: var(--radii);
@@ -123,7 +126,7 @@ ul {
   color: #555;
 }
 .idea-list .idea [type='checkbox'] {
-  accent-color: var(--light-orange);
+  accent-color: var(--light-pink);
 }
 
 .idea-list p.title {
@@ -139,7 +142,7 @@ ul {
   line-height: 1rem;
   padding: 0.5rem;
   font-weight: 100;
-  color: #555;
+  color: rgb(49, 49, 49);
   border-bottom-right-radius: 0.3rem;
   grid-area: bottom;
 }
@@ -175,7 +178,7 @@ dialog.active#tellUser{
 height: auto;
 }
 dialog.active h2 {
-  background-color: var(--dark-orange);
+  background-color: var(--light-pink);
   color: #fff;
   padding: 1rem 3rem;
   font-size: 2rem;
@@ -200,14 +203,17 @@ dialog.active :is(input, button) {
 dialog button {
   margin: 0 2rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--dark-orange);
-  background-color: #fff;
-  color: var(--dark-orange);
+  border: 1px solid var(--dark-pink);
+  color: #ffffff;
+  background-color: var(--light-pink);
   border-radius: var(--radii);
   cursor: pointer;
 }
-:is(dialog, h2) button:active {
-  background-color: var(--light-orange);
+:is(dialog, h2) button:active,
+:is(dialog, h2) button:hover,li button:hover,
+li button:active{
+  background-color: var(--dark-pink);
+  color: #fff;
 }
 
 li button {
@@ -215,9 +221,9 @@ li button {
   width: 7rem;
   height: 1.5rem;
   padding: 0.1rem 2rem;
-  border: 1px solid var(--dark-orange);
+  border: 1px solid var(--dark-pink);
   background-color: #fff;
-  color: var(--dark-orange);
+  color: var(--dark-pink);
   border-radius: var(--radii);
   cursor: pointer;
 }
@@ -257,7 +263,7 @@ margin-bottom: 0.5rem;
 .person-list .noPerson{
   border: 1px solid #222;
   border-radius: var(--radii);
-  background-color: var(--very-light-orange);
+  background-color: var(--very-light-pink);
   margin: 1rem;
   padding: 0.5rem 2rem;
 }

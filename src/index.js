@@ -52,6 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btnCancelIdea")
     .addEventListener("click", hideOverlay);
   document.getElementById("btnNoDelete").addEventListener("click", hideOverlay);
+  document
+    .getElementById("btnNoDelGift")
+    .addEventListener("click", hideOverlay);
 
   document
     .getElementById("btnAddPerson")
@@ -153,6 +156,7 @@ function hideOverlay(ev) {
       document.getElementById("day").value = "";
     }
   }
+  console.log(document.querySelector(".overlay"));
   document.querySelector(".overlay").classList.remove("active");
   document
     .querySelectorAll(".overlay dialog")
