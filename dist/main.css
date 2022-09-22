@@ -7,6 +7,107 @@
   --radii: 0.4rem;
   /* --light-pink: #fe2f6d; */
 }
+* ----------------- Type hierarchy ----------------- */ h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+  margin: 0 0 1.5rem;
+}
+
+h1 {
+  font-size: 1.902rem;
+}
+
+h2 {
+  font-size: 1.602rem;
+}
+
+h3 {
+  font-size: 1.424rem;
+}
+
+h4 {
+  font-size: 1.266rem;
+}
+
+h5 {
+  font-size: 1.125rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+small {
+  font-size: 0.889rem;
+}
+
+
+@media only screen and (min-width: 45em) {
+
+  /* ---------- Tablet ---------- */
+
+  h1 {
+    font-size: 2.488rem;
+  }
+
+  h2 {
+    font-size: 2.074rem;
+  }
+
+  h3 {
+    font-size: 1.728rem;
+  }
+
+  h4 {
+    font-size: 1.44rem;
+  }
+
+  h5 {
+    font-size: 1.2rem;
+  }
+
+  small {
+    font-size: 0.833rem;
+  }
+
+}
+
+@media only screen and (min-width: 60em) {
+
+  /* ---------- Desktop ---------- */
+
+  h1 {
+    font-size: 3.052rem;
+  }
+
+  h2 {
+    font-size: 2.441rem;
+  }
+
+  h3 {
+    font-size: 1.953rem;
+  }
+
+  h4 {
+    font-size: 1.563rem;
+  }
+
+  h5 {
+    font-size: 1.25rem;
+  }
+
+  small {
+    font-size: 0.8rem;
+  }
+
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -16,6 +117,7 @@
 html {
   font-size: 20px;
   font-family: sans-serif;
+  box-sizing: border-box;
 }
 body {
   min-height: 100vh;
@@ -63,6 +165,7 @@ section h2 {
 }
 section h2 > button {
   margin-right: 4rem;
+  margin-left: 0.5rem;
   padding: 0.1rem 2rem;
   border: 1px solid var(--dark-pink);
   background-color: var(--pale-pink);
@@ -202,7 +305,7 @@ dialog.active :is(input, button) {
 }
 dialog button {
   margin: 0 2rem;
-  padding: 0.1rem 2rem;
+  padding: 0.2rem 2rem;
   border: 1px solid var(--dark-pink);
   color: #ffffff;
   background-color: var(--light-pink);

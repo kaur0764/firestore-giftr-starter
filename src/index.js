@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", handleSelectGift);
 
   // loadInitialData();
+
   const qPeople = query(collection(db, "people"));
   const unsubscribe = onSnapshot(
     qPeople,
@@ -187,7 +188,6 @@ function showOverlay(ev) {
     id = "dlgPerson";
   }
   document.querySelector(".overlay").classList.add("active");
-  //TODO: check that person is selected before adding an idea
   document.getElementById(id).classList.add("active");
 }
 
@@ -197,12 +197,15 @@ function loadInitialData() {
 
 async function getPeople() {
   console.log("getpeople");
+  // const docs = query(collection(db, "people"), orderBy("birth-month"));
+  // const querySnapshot = await getDocs(docs);
   const querySnapshot = await getDocs(collection(db, "people"));
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     const id = doc.id;
     people.push({ id, ...data });
   });
+  console.log("PEOPLE" + people);
   buildPeople(people);
 }
 
@@ -367,10 +370,6 @@ async function handleSelectPerson(ev) {
       li.classList.add("selected");
       getIdeas(id);
     }
-  } else {
-    //clicked a button not inside <li class="person">
-    //Show the dialog form to ADD the doc (same form as EDIT)
-    //showOverlay function can be called from here or with the click listener in DOMContentLoaded, not both
   }
 }
 
@@ -500,10 +499,6 @@ async function handleSelectGift(ev) {
       showOverlay();
       overlay.classList.remove("deleteGift");
     }
-  } else {
-    //clicked a button not inside <li class="person">
-    //Show the dialog form to ADD the doc (same form as EDIT)
-    //showOverlay function can be called from here or with the click listener in DOMContentLoaded, not both
   }
 }
 
