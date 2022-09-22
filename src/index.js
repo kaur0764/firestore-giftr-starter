@@ -156,7 +156,6 @@ function hideOverlay(ev) {
       document.getElementById("day").value = "";
     }
   }
-  console.log(document.querySelector(".overlay"));
   document.querySelector(".overlay").classList.remove("active");
   document
     .querySelectorAll(".overlay dialog")
@@ -278,7 +277,18 @@ async function savePerson(ev) {
 
 async function deletePerson() {
   console.log("deleteperson");
+  const personRef = doc(collection(db, "people"), selectedPersonId);
   await deleteDoc(doc(db, "people", selectedPersonId));
+  const docs = query(
+    collection(db, "gift-ideas"),
+    where("person-id", "==", personRef)
+  );
+  const qSnapshot = await getDocs(docs);
+  qSnapshot.forEach((doc) => {
+    selectedGiftId = doc.id;
+    deleteGift();
+  });
+  selectedGiftId = null;
   hideOverlay();
   people = [];
   getPeople();
