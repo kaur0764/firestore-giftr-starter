@@ -446,6 +446,7 @@ async function saveGift(ev) {
     }
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
+    btnSaveIdea.dataset.id = "";
   } catch (err) {
     console.error("Error adding document: ", err);
     tellUser("Error adding document", err);
