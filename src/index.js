@@ -12,6 +12,7 @@ import {
   getDoc,
   deleteDoc,
   onSnapshot,
+  orderBy,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -87,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
     (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
-          console.log("New data: ", change.doc.data());
           let newDoc = change.doc.data();
           showPerson({
             name: newDoc.name,
@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
         if (change.type === "modified") {
-          console.log("Modified data: ", change.doc.data());
           let newDoc = change.doc.data();
           showPerson({
             name: newDoc.name,
@@ -107,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
         if (change.type === "removed") {
-          console.log("Removed data: ", change.doc.data());
           let li = document.querySelector(`li[data-id="${change.doc.id}"]`);
           li.parentElement.removeChild(li);
           selectedPersonId = null;
@@ -115,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
     (err) => {
-      //error handler
+      console.error("Error: ", err);
     }
   );
 
@@ -125,22 +123,19 @@ document.addEventListener("DOMContentLoaded", () => {
     (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
-          console.log("New data: ", change.doc.data());
           let newDoc = change.doc.data();
           getIdeas(selectedPersonId);
         }
         if (change.type === "modified") {
-          console.log("Modified data: ", change.doc.data());
           getIdeas(selectedPersonId);
         }
         if (change.type === "removed") {
-          console.log("Removed data: ", change.doc.data());
           getIdeas(selectedPersonId);
         }
       });
     },
     (err) => {
-      //error handler
+      console.error("Error: ", err);
     }
   );
 
@@ -148,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function hideOverlay(ev) {
-  console.log("hideoverlay");
   if (ev) {
     ev.preventDefault();
     if (ev.target.id == "btnCancelPerson") {
@@ -176,7 +170,6 @@ function hideOverlay(ev) {
   }
 }
 function showOverlay(ev) {
-  console.log("showoverlay");
   let overlay = document.querySelector(".overlay");
   let id;
   if (ev) {
@@ -200,9 +193,6 @@ function loadInitialData() {
 }
 
 async function getPeople() {
-  console.log("getpeople");
-  // const docs = query(collection(db, "people"), orderBy("birth-month"));
-  // const querySnapshot = await getDocs(docs);
   const querySnapshot = await getDocs(collection(db, "people"));
   querySnapshot.forEach((doc) => {
     const data = doc.data();
@@ -213,7 +203,6 @@ async function getPeople() {
 }
 
 function buildPeople(people) {
-  console.log("buildpeople");
   let ul = document.querySelector("ul.person-list");
   if (people.length) {
     ul.innerHTML = people
@@ -249,7 +238,6 @@ function buildPeople(people) {
 }
 
 async function savePerson(ev) {
-  console.log("saveperson");
   let name = document.getElementById("name").value;
   let month = document.getElementById("month").value;
   let day = document.getElementById("day").value;
@@ -285,7 +273,6 @@ async function savePerson(ev) {
 }
 
 async function deletePerson() {
-  console.log("deleteperson");
   const personRef = doc(collection(db, "people"), selectedPersonId);
   await deleteDoc(doc(db, "people", selectedPersonId));
   const docs = query(
@@ -305,7 +292,6 @@ async function deletePerson() {
 }
 
 function showPerson(person) {
-  console.log("showperson");
   let li = document.querySelector(`li[data-id="${person.id}"]`);
   if (li) {
     //update on screen
@@ -349,7 +335,6 @@ function showPerson(person) {
 }
 
 async function handleSelectPerson(ev) {
-  console.log("handleselectedperson");
   const li = ev.target.closest(".person");
   li.click();
   const id = li ? li.getAttribute("data-id") : null;
@@ -380,7 +365,6 @@ async function handleSelectPerson(ev) {
 }
 
 async function getIdeas(id) {
-  console.log("getideas");
   const personRef = doc(collection(db, "people"), id);
   const docs = query(
     collection(db, "gift-ideas"),
@@ -404,7 +388,6 @@ async function getIdeas(id) {
 }
 
 function buildIdeas(ideas) {
-  console.log("buildideas");
   const ul = document.querySelector(".idea-list");
   if (ideas.length) {
     ul.innerHTML = ideas
@@ -435,7 +418,6 @@ function buildIdeas(ideas) {
 }
 
 async function saveGift(ev) {
-  console.log("savegift");
   let idea = document.getElementById("title").value;
   let location = document.getElementById("location").value;
   if (!title || !location) return; //form needs more info
@@ -464,7 +446,6 @@ async function saveGift(ev) {
     }
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
-    // getIdeas(selectedPersonId);
   } catch (err) {
     console.error("Error adding document: ", err);
     tellUser("Error adding document", err);
@@ -472,15 +453,12 @@ async function saveGift(ev) {
 }
 
 async function deleteGift() {
-  console.log("deletegift");
   await deleteDoc(doc(db, "gift-ideas", selectedGiftId));
   hideOverlay();
-  // getIdeas(selectedPersonId);
   tellUser("Gift idea deleted");
 }
 
 async function handleSelectGift(ev) {
-  console.log("handleselectedgift");
   const li = ev.target.closest(".idea");
   li.click();
   const id = li ? li.getAttribute("data-id") : null;
@@ -519,7 +497,6 @@ async function checkboxUpdate(ev) {
 }
 
 function tellUser(msg, err) {
-  console.log("telluser");
   const dlg = document.getElementById("tellUser");
   if (err) {
     dlg.innerHTML = `<h2>Failed!</h2>
