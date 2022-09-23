@@ -441,7 +441,6 @@ async function saveGift(ev) {
       const docRef = await addDoc(collection(db, "gift-ideas"), giftIdea);
       giftIdea.id = docRef.id;
       hideOverlay();
-      selectedGiftId = null;
       tellUser("Gift idea added to the database");
     }
     document.getElementById("title").value = "";
