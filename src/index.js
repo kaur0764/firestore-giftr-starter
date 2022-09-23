@@ -81,8 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .querySelector(".idea-list")
     .addEventListener("click", handleSelectGift);
 
-  // loadInitialData();
-
   const qPeople = query(collection(db, "people"));
   const unsubscribe = onSnapshot(
     qPeople,
@@ -145,6 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
       //error handler
     }
   );
+
+  loadInitialData();
 });
 
 function hideOverlay(ev) {
@@ -155,6 +155,10 @@ function hideOverlay(ev) {
       document.getElementById("name").value = "";
       document.getElementById("month").value = "";
       document.getElementById("day").value = "";
+    }
+    if (ev.target.id == "btnCancelIdea") {
+      document.getElementById("title").value = "";
+      document.getElementById("location").value = "";
     }
   }
   document.querySelector(".overlay").classList.remove("active");
@@ -205,7 +209,6 @@ async function getPeople() {
     const id = doc.id;
     people.push({ id, ...data });
   });
-  console.log("PEOPLE" + people);
   buildPeople(people);
 }
 
@@ -239,6 +242,9 @@ function buildPeople(people) {
   } else {
     ul.innerHTML = '<li class="noPerson"><p>The People list is empty.</p></li>';
     selectedPersonId = null;
+    const ulIdea = document.querySelector(".idea-list");
+    ulIdea.innerHTML =
+      '<li class="noIdea"><p>No Gift Ideas for selected person.</p></li>';
   }
 }
 
@@ -458,7 +464,7 @@ async function saveGift(ev) {
     }
     document.getElementById("title").value = "";
     document.getElementById("location").value = "";
-    getIdeas(selectedPersonId);
+    // getIdeas(selectedPersonId);
   } catch (err) {
     console.error("Error adding document: ", err);
     tellUser("Error adding document", err);
@@ -469,7 +475,7 @@ async function deleteGift() {
   console.log("deletegift");
   await deleteDoc(doc(db, "gift-ideas", selectedGiftId));
   hideOverlay();
-  getIdeas(selectedPersonId);
+  // getIdeas(selectedPersonId);
   tellUser("Gift idea deleted");
 }
 
