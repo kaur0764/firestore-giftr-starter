@@ -265,6 +265,7 @@ async function savePerson(ev) {
     document.getElementById("name").value = "";
     document.getElementById("month").value = "";
     document.getElementById("day").value = "";
+    btnSavePerson.dataset.id = "";
     showPerson(person);
   } catch (err) {
     console.error("Error adding document: ", err);
