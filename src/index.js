@@ -14,7 +14,14 @@ import {
   onSnapshot,
   orderBy,
 } from "firebase/firestore";
-import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  signInWithPopup,
+  GithubAuthProvider,
+  setPersistence,
+  browserSessionPersistence,
+  signOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkx8fhcF6ONfR0JfeWpsxG1dY4SlnYeVg",
@@ -62,10 +69,30 @@ function attemptLogin() {
       const token = credential.accessToken;
 
       const user = result.user;
+      let div = document.querySelector(".headerBtns");
+      div.classList.add("signedIn");
     })
     .catch((error) => {
       const errorMessage = error.message;
       console.error(errorMessage);
+    });
+}
+
+setPersistence(auth, browserSessionPersistence)
+  .then(() => {})
+  .catch((error) => {
+    const errorMessage = error.message;
+    console.error(errorMessage);
+  });
+
+function signOutUser() {
+  signOut(auth)
+    .then(() => {
+      let div = document.querySelector(".headerBtns");
+      div.classList.remove("signedIn");
+    })
+    .catch((err) => {
+      console.error(err);
     });
 }
 
@@ -107,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", handleSelectGift);
 
   document.getElementById("signInBtn").addEventListener("click", attemptLogin);
+  document.getElementById("signOutBtn").addEventListener("click", signOutUser);
 
   const qPeople = query(collection(db, "people"));
   const unsubscribe = onSnapshot(

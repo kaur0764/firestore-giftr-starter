@@ -159,6 +159,24 @@ header button{
   align-self: flex-end;
 }
 
+header button:hover,
+header button:active{
+  background-color: #ffffff;
+  color: var(--dark-pink);
+}
+
+header #signOutBtn{
+  display: none;
+}
+
+.signedIn #signInBtn{
+  display: none;
+}
+
+.signedIn #signOutBtn{
+  display: inline;
+}
+
 main {
   display: flex;
   flex-direction: row;
