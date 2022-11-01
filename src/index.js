@@ -14,9 +14,7 @@ import {
   onSnapshot,
   orderBy,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-
-const auth = getAuth(app);
+import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkx8fhcF6ONfR0JfeWpsxG1dY4SlnYeVg",
@@ -29,6 +27,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 let people = [];
 let months = [
@@ -47,6 +46,28 @@ let months = [
 ];
 let selectedPersonId = null;
 let selectedGiftId = null;
+
+// Firebase Authentication
+const auth = getAuth(app);
+const provider = new GithubAuthProvider();
+
+provider.setCustomParameters({
+  allow_signup: "true",
+});
+
+function attemptLogin() {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      const user = result.user;
+    })
+    .catch((error) => {
+      const errorMessage = error.message;
+      console.error(errorMessage);
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -84,6 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelector(".idea-list")
     .addEventListener("click", handleSelectGift);
+
+  document.getElementById("signInBtn").addEventListener("click", attemptLogin);
 
   const qPeople = query(collection(db, "people"));
   const unsubscribe = onSnapshot(

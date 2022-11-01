@@ -130,6 +130,10 @@ main {
 header {
   background-color: var(--light-pink);
   border-bottom: 0.1rem solid var(--dark-pink);
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 header h1 {
   font-size: 4rem;
@@ -142,6 +146,19 @@ header h2 {
   font-weight: 300;
   color: #fff;
 }
+
+header button{
+  margin: 0.5rem 0rem;
+  padding: 0.4rem 1.5rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--dark-pink);
+  color: #ffffff;
+  background-color: var(--dark-pink);
+  border-radius: var(--radii);
+  cursor: pointer;
+  align-self: flex-end;
+}
+
 main {
   display: flex;
   flex-direction: row;
