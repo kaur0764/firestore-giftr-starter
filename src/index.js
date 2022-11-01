@@ -14,6 +14,9 @@ import {
   onSnapshot,
   orderBy,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(app);
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkx8fhcF6ONfR0JfeWpsxG1dY4SlnYeVg",
