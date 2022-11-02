@@ -13,7 +13,6 @@ import {
   deleteDoc,
   onSnapshot,
   orderBy,
-  connectFirestoreEmulator,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -511,6 +510,8 @@ async function saveGift(ev) {
     let id = btnSaveIdea.dataset.id;
     if (id) {
       const docRef = doc(collection(db, "gift-ideas"), id);
+      const docSnap = await getDoc(docRef);
+      giftIdea.bought = docSnap.data().bought;
       await setDoc(docRef, giftIdea);
       giftIdea.id = id;
       hideOverlay();
