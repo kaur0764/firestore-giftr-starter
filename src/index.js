@@ -13,6 +13,7 @@ import {
   deleteDoc,
   onSnapshot,
   orderBy,
+  connectFirestoreEmulator,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -21,6 +22,7 @@ import {
   setPersistence,
   browserSessionPersistence,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -53,6 +55,7 @@ let months = [
 ];
 let selectedPersonId = null;
 let selectedGiftId = null;
+let uid = null;
 
 // Firebase Authentication
 const auth = getAuth(app);
@@ -69,8 +72,6 @@ function attemptLogin() {
       const token = credential.accessToken;
 
       const user = result.user;
-      let div = document.querySelector(".headerBtns");
-      div.classList.add("signedIn");
     })
     .catch((error) => {
       const errorMessage = error.message;
@@ -86,15 +87,33 @@ setPersistence(auth, browserSessionPersistence)
   });
 
 function signOutUser() {
-  signOut(auth)
-    .then(() => {
-      let div = document.querySelector(".headerBtns");
-      div.classList.remove("signedIn");
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  signOut(auth).catch((err) => {
+    console.error(err);
+  });
 }
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    uid = user.uid;
+
+    let div = document.querySelector(".headerBtns");
+    div.classList.add("signedIn");
+    createSnapshots();
+  } else {
+    uid = null;
+    selectedPersonId = null;
+
+    let div = document.querySelector(".headerBtns");
+    div.classList.remove("signedIn");
+
+    let ulPeople = document.querySelector("ul.person-list");
+    ulPeople.innerHTML =
+      '<li class="noPerson"><p>Please Sign In to view and edit People list</p></li>';
+    let ulIdea = document.querySelector(".idea-list");
+    ulIdea.innerHTML =
+      '<li class="noIdea"><p>Please Sign In to view and edit Gifts list</p></li>';
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -106,6 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnNoDelete").addEventListener("click", hideOverlay);
   document
     .getElementById("btnNoDelGift")
+    .addEventListener("click", hideOverlay);
+  document
+    .getElementById("btnCloseSignInDlg")
     .addEventListener("click", hideOverlay);
 
   document
@@ -135,7 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("signInBtn").addEventListener("click", attemptLogin);
   document.getElementById("signOutBtn").addEventListener("click", signOutUser);
+});
 
+function createSnapshots() {
   const qPeople = query(collection(db, "people"));
   const unsubscribe = onSnapshot(
     qPeople,
@@ -192,9 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error: ", err);
     }
   );
-
-  loadInitialData();
-});
+}
 
 function hideOverlay(ev) {
   if (ev) {
@@ -238,12 +260,14 @@ function showOverlay(ev) {
   } else {
     id = "dlgPerson";
   }
-  document.querySelector(".overlay").classList.add("active");
-  document.getElementById(id).classList.add("active");
-}
 
-function loadInitialData() {
-  getPeople();
+  document.querySelector(".overlay").classList.add("active");
+
+  if (!uid) {
+    document.getElementById("dlgNotSignedIn").classList.add("active");
+  } else {
+    document.getElementById(id).classList.add("active");
+  }
 }
 
 async function getPeople() {

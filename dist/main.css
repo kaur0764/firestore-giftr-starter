@@ -336,6 +336,12 @@ dialog.active :is(input, button) {
   font-family: inherit;
   font-weight: inherit;
 }
+
+#dlgNotSignedIn.active{
+  display: flex;
+  flex-direction: column;
+}
+
 dialog button {
   margin: 0 2rem;
   padding: 0.2rem 2rem;
@@ -387,6 +393,11 @@ margin-bottom: 0.5rem;
 .btnDeleteGift{
   margin: 0;
   margin-right: 0.5rem;
+}
+
+#btnCloseSignInDlg{
+  margin-bottom: 0.5rem;
+  align-self: flex-end;
 }
 
 #btnOk{
