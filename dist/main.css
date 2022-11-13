@@ -5,7 +5,6 @@
   --very-light-pink: #fa98b5;
   --pale-pink: #f4c6d4;
   --radii: 0.4rem;
-  /* --light-pink: #fe2f6d; */
 }
 * ----------------- Type hierarchy ----------------- */
 h1,
@@ -134,6 +133,8 @@ header {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  z-index: 100000;
+  position: relative;
 }
 header h1 {
   font-size: 4rem;
@@ -149,7 +150,8 @@ header h2 {
 
 header button{
   margin: 0.5rem 0rem;
-  padding: 0.4rem 1.5rem;
+  padding: 0.4rem 1rem;
+  min-width: 6.5rem;
   font-size: 0.8rem;
   border: 1px solid var(--dark-pink);
   color: #ffffff;
@@ -241,7 +243,6 @@ ul {
   border-radius: var(--radii);
   margin: 1rem 0;
   display: grid;
-  /*usenamedgridareas*/
   grid-template-areas: 'tab top' 'tab bottom';
   grid-template-columns: 1fr 2fr 1fr;
   background-color: var(--very-light-pink);
@@ -415,3 +416,62 @@ margin-bottom: 0.5rem;
   padding: 0.5rem 2rem;
 }
 
+.overlay-loader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+  justify-content: center;
+}
+
+.overlay-loader.active {
+  display: flex;
+}
+
+.ring {
+  --uib-size: 40px;
+  --uib-speed: 2s;
+  --uib-color: var(--dark-pink);
+
+  height: var(--uib-size);
+  width: var(--uib-size);
+  vertical-align: middle;
+  transform-origin: center;
+  animation: rotate var(--uib-speed) linear infinite;
+  position: absolute;
+  top: 50%;
+}
+
+.ring circle {
+  fill: none;
+  stroke: var(--uib-color);
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: stretch calc(var(--uib-speed) * 0.75) ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stretch {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+
+  100% {
+    stroke-dashoffset: -124px;
+  }
+}

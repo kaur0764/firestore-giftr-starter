@@ -17,6 +17,7 @@ import {
 import {
   getAuth,
   signInWithPopup,
+  signInWithCredential,
   GithubAuthProvider,
   setPersistence,
   browserSessionPersistence,
@@ -65,12 +66,22 @@ provider.setCustomParameters({
 });
 
 function attemptLogin() {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      const credential = GithubAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-
-      const user = result.user;
+  setPersistence(auth, browserSessionPersistence)
+    .then(() => {
+      let token = sessionStorage.getItem("accessToken");
+      if (token) {
+        validateWithToken(token);
+      } else {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const credential = GithubAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            sessionStorage.setItem("accessToken", token);
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+      }
     })
     .catch((error) => {
       const errorMessage = error.message;
@@ -78,12 +89,13 @@ function attemptLogin() {
     });
 }
 
-setPersistence(auth, browserSessionPersistence)
-  .then(() => {})
-  .catch((error) => {
+function validateWithToken(token) {
+  const credential = GithubAuthProvider.credential(token);
+  signInWithCredential(auth, credential).catch((error) => {
     const errorMessage = error.message;
-    console.error(errorMessage);
+    console.log(errorMessage);
   });
+}
 
 function signOutUser() {
   signOut(auth).catch((err) => {
@@ -92,17 +104,15 @@ function signOutUser() {
 }
 
 onAuthStateChanged(auth, (user) => {
+  showLoader();
+  let div = document.querySelector(".headerBtns");
   if (user) {
-    uid = user.uid;
-
-    let div = document.querySelector(".headerBtns");
     div.classList.add("signedIn");
+    uid = user.uid;
     createSnapshots();
   } else {
     uid = null;
     selectedPersonId = null;
-
-    let div = document.querySelector(".headerBtns");
     div.classList.remove("signedIn");
 
     let ulPeople = document.querySelector("ul.person-list");
@@ -217,6 +227,23 @@ function createSnapshots() {
   );
 }
 
+function showLoader() {
+  document.querySelector(".overlay-loader").classList.add("active");
+  setTimeout(function () {
+    document.querySelector(".overlay-loader").classList.remove("active");
+  }, 1000);
+}
+
+async function getPeople() {
+  const querySnapshot = await getDocs(collection(db, "people"));
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const id = doc.id;
+    people.push({ id, ...data });
+  });
+  buildPeople(people);
+}
+
 function hideOverlay(ev) {
   if (ev) {
     ev.preventDefault();
@@ -244,6 +271,7 @@ function hideOverlay(ev) {
     li.click();
   }
 }
+
 function showOverlay(ev) {
   let overlay = document.querySelector(".overlay");
   let id;
@@ -267,16 +295,6 @@ function showOverlay(ev) {
   } else {
     document.getElementById(id).classList.add("active");
   }
-}
-
-async function getPeople() {
-  const querySnapshot = await getDocs(collection(db, "people"));
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const id = doc.id;
-    people.push({ id, ...data });
-  });
-  buildPeople(people);
 }
 
 function buildPeople(people) {

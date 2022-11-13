@@ -23,6 +23,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "@uiball/loaders": "^1.2.6",
     "firebase": "^9.9.4"
   }
 }
