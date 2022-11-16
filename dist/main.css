@@ -306,25 +306,28 @@ section.overlay.active {
 dialog {
   background-color: #fff;
   display: none;
+  border: 1px solid var(--light-pink);
+  border-radius: var(--radii);
+  overflow: hidden;
 }
 dialog.active {
   display: block;
   margin: auto;
-    width: max-content;
-      height: auto;
+  width: max-content;
+  height: auto;
 }
 
 dialog.active h2 {
   background-color: var(--light-pink);
   color: #fff;
   padding: 1rem 3rem;
-  font-size: 2rem;
 }
 dialog.active p {
   display: flex;
   margin: 1rem 3rem;
   justify-content: flex-start;
   align-items: flex-start;
+  font-size: 1.3rem;
 }
 dialog.active label {
   flex-basis: 20ch;

@@ -77,6 +77,7 @@ function attemptLogin() {
             const credential = GithubAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             sessionStorage.setItem("accessToken", token);
+            validateWithToken(token);
           })
           .catch((error) => {
             console.log(error.message);
@@ -91,10 +92,23 @@ function attemptLogin() {
 
 function validateWithToken(token) {
   const credential = GithubAuthProvider.credential(token);
-  signInWithCredential(auth, credential).catch((error) => {
-    const errorMessage = error.message;
-    console.log(errorMessage);
-  });
+  signInWithCredential(auth, credential)
+    .then((result) => {
+      let div = document.querySelector(".headerBtns");
+      div.classList.add("signedIn");
+      uid = result.user.uid;
+      createSnapshots();
+    })
+    .catch((error) => {
+      sessionStorage.removeItem("accessToken");
+      signOutUser();
+      let overlay = document.querySelector(".overlay");
+      overlay.classList.add("signInAgain");
+      showOverlay();
+      overlay.classList.remove("signInAgain");
+      const errorMessage = error.message;
+      console.log(errorMessage);
+    });
 }
 
 function signOutUser() {
@@ -105,14 +119,15 @@ function signOutUser() {
 
 onAuthStateChanged(auth, (user) => {
   showLoader();
-  let div = document.querySelector(".headerBtns");
   if (user) {
-    div.classList.add("signedIn");
-    uid = user.uid;
-    createSnapshots();
+    let token = sessionStorage.getItem("accessToken");
+    if (token) {
+      validateWithToken(token);
+    }
   } else {
     uid = null;
     selectedPersonId = null;
+    let div = document.querySelector(".headerBtns");
     div.classList.remove("signedIn");
 
     let ulPeople = document.querySelector("ul.person-list");
@@ -134,9 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnNoDelete").addEventListener("click", hideOverlay);
   document
     .getElementById("btnNoDelGift")
-    .addEventListener("click", hideOverlay);
-  document
-    .getElementById("btnCloseSignInDlg")
     .addEventListener("click", hideOverlay);
 
   document
@@ -275,6 +287,7 @@ function hideOverlay(ev) {
 function showOverlay(ev) {
   let overlay = document.querySelector(".overlay");
   let id;
+  document.querySelector(".overlay").classList.add("active");
   if (ev) {
     ev.preventDefault();
     id = ev.target.id === "btnAddIdea" ? "dlgIdea" : "dlgPerson";
@@ -288,12 +301,17 @@ function showOverlay(ev) {
     id = "dlgPerson";
   }
 
-  document.querySelector(".overlay").classList.add("active");
-
-  if (!uid) {
-    document.getElementById("dlgNotSignedIn").classList.add("active");
-  } else {
+  if (overlay.classList.contains("signInAgain")) {
+    id = "dlgSignInAgain";
     document.getElementById(id).classList.add("active");
+    setTimeout(hideOverlay, 1300);
+  } else {
+    if (!uid) {
+      document.getElementById("dlgNotSignedIn").classList.add("active");
+      setTimeout(hideOverlay, 1300);
+    } else {
+      document.getElementById(id).classList.add("active");
+    }
   }
 }
 
@@ -598,14 +616,13 @@ function tellUser(msg, err) {
   const dlg = document.getElementById("tellUser");
   if (err) {
     dlg.innerHTML = `<h2>Failed!</h2>
-          <p>${msg}</p>
-          <button id="btnOk">Ok</button>`;
+          <p>${msg}</p>`;
   } else {
     dlg.innerHTML = `<h2>Successful!</h2>
-          <p>${msg}</p>
-          <button id="btnOk">Ok</button>`;
+          <p>${msg}</p>`;
   }
+
   document.querySelector(".overlay").classList.add("active");
   document.getElementById("tellUser").classList.add("active");
-  document.getElementById("btnOk").addEventListener("click", hideOverlay);
+  setTimeout(hideOverlay, 1300);
 }
