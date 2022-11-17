@@ -77,7 +77,8 @@ function attemptLogin() {
             const credential = GithubAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             sessionStorage.setItem("accessToken", token);
-            validateWithToken(token);
+            uid = result.user.uid;
+            signInUser();
           })
           .catch((error) => {
             console.log(error.message);
@@ -94,10 +95,8 @@ function validateWithToken(token) {
   const credential = GithubAuthProvider.credential(token);
   signInWithCredential(auth, credential)
     .then((result) => {
-      let div = document.querySelector(".headerBtns");
-      div.classList.add("signedIn");
       uid = result.user.uid;
-      createSnapshots();
+      signInUser();
     })
     .catch((error) => {
       sessionStorage.removeItem("accessToken");
@@ -109,6 +108,12 @@ function validateWithToken(token) {
       const errorMessage = error.message;
       console.log(errorMessage);
     });
+}
+
+function signInUser() {
+  let div = document.querySelector(".headerBtns");
+  div.classList.add("signedIn");
+  createSnapshots();
 }
 
 function signOutUser() {
@@ -304,7 +309,7 @@ function showOverlay(ev) {
   if (overlay.classList.contains("signInAgain")) {
     id = "dlgSignInAgain";
     document.getElementById(id).classList.add("active");
-    setTimeout(hideOverlay, 1300);
+    setTimeout(hideOverlay, 1500);
   } else {
     if (!uid) {
       document.getElementById("dlgNotSignedIn").classList.add("active");
