@@ -13,6 +13,7 @@ import {
   deleteDoc,
   onSnapshot,
   orderBy,
+  connectFirestoreEmulator,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -24,6 +25,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { DotWave } from "@uiball/loaders";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkx8fhcF6ONfR0JfeWpsxG1dY4SlnYeVg",
@@ -78,6 +80,15 @@ function attemptLogin() {
             const token = credential.accessToken;
             sessionStorage.setItem("accessToken", token);
             uid = result.user.uid;
+            const usersColRef = collection(db, "users");
+            setDoc(
+              doc(usersColRef, uid),
+              {
+                displayName: result.user.displayName,
+                email: result.user.email,
+              },
+              { merge: true }
+            );
             signInUser();
           })
           .catch((error) => {
@@ -113,6 +124,13 @@ function validateWithToken(token) {
 function signInUser() {
   let div = document.querySelector(".headerBtns");
   div.classList.add("signedIn");
+  const ulPeople = document.querySelector(".person-list");
+  ulPeople.innerHTML =
+    '<li class="noPerson"><p>The People list is empty.</p></li>';
+  selectedPersonId = null;
+  const ulIdea = document.querySelector(".idea-list");
+  ulIdea.innerHTML =
+    '<li class="noIdea"><p>No Gift Ideas for selected person.</p></li>';
   createSnapshots();
 }
 
@@ -185,8 +203,17 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("signOutBtn").addEventListener("click", signOutUser);
 });
 
-function createSnapshots() {
-  const qPeople = query(collection(db, "people"));
+function getUser() {
+  const ref = doc(db, "users", auth.currentUser.uid);
+  return ref;
+}
+
+async function createSnapshots() {
+  const userRef = getUser();
+  const qPeople = query(
+    collection(db, "people"),
+    where("owner", "==", userRef)
+  );
   const unsubscribe = onSnapshot(
     qPeople,
     (snapshot) => {
@@ -198,6 +225,7 @@ function createSnapshots() {
             "birth-month": newDoc["birth-month"],
             "birth-day": newDoc["birth-day"],
             id: change.doc.id,
+            owner: newDoc.owner,
           });
         }
         if (change.type === "modified") {
@@ -207,11 +235,14 @@ function createSnapshots() {
             "birth-month": newDoc["birth-month"],
             "birth-day": newDoc["birth-day"],
             id: change.doc.id,
+            owner: newDoc.owner,
           });
         }
         if (change.type === "removed") {
           let li = document.querySelector(`li[data-id="${change.doc.id}"]`);
-          li.parentElement.removeChild(li);
+          if (li) {
+            li.parentElement.removeChild(li);
+          }
           selectedPersonId = null;
         }
       });
@@ -228,13 +259,19 @@ function createSnapshots() {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           let newDoc = change.doc.data();
-          getIdeas(selectedPersonId);
+          if (selectedPersonId) {
+            getIdeas(selectedPersonId);
+          }
         }
         if (change.type === "modified") {
-          getIdeas(selectedPersonId);
+          if (selectedPersonId) {
+            getIdeas(selectedPersonId);
+          }
         }
         if (change.type === "removed") {
-          getIdeas(selectedPersonId);
+          if (selectedPersonId) {
+            getIdeas(selectedPersonId);
+          }
         }
       });
     },
@@ -252,7 +289,10 @@ function showLoader() {
 }
 
 async function getPeople() {
-  const querySnapshot = await getDocs(collection(db, "people"));
+  const userRef = getUser();
+  const peopleCollectionRef = collection(db, "people");
+  const docs = query(peopleCollectionRef, where("owner", "==", userRef));
+  const querySnapshot = await getDocs(docs);
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     const id = doc.id;
@@ -323,27 +363,7 @@ function showOverlay(ev) {
 function buildPeople(people) {
   let ul = document.querySelector("ul.person-list");
   if (people.length) {
-    ul.innerHTML = people
-      .map((person) => {
-        const dob = `${months[person["birth-month"] - 1]} ${
-          person["birth-day"]
-        }`;
-        return `<li data-id="${person.id}" data-name="${person[
-          "name"
-        ].toLowerCase()}" class="person">
-            <div>
-            <p class="name">${person.name}</p>
-            <p class="dob">${dob}</p>
-            </div>
-            <div class="editDelBtns">
-            <button class="edit btnEditPerson">Edit</button>
-            <button class="delete btnDeletePerson">Delete</button>
-            </div>
-          </li>`;
-      })
-      .join("");
     selectedPersonId = people[0].id;
-
     let li = document.querySelector(`[data-id="${selectedPersonId}"]`);
     li.click();
   } else {
@@ -360,10 +380,12 @@ async function savePerson(ev) {
   let month = document.getElementById("month").value;
   let day = document.getElementById("day").value;
   if (!name || !month || !day) return; //form needs more info
+  const userRef = getUser();
   const person = {
     name,
     "birth-month": month,
     "birth-day": day,
+    owner: userRef,
   };
   try {
     let btnSavePerson = document.getElementById("btnSavePerson");
@@ -410,13 +432,15 @@ async function deletePerson() {
   tellUser("Person deleted");
 }
 
-function showPerson(person) {
+async function showPerson(person) {
   let li = document.querySelector(`li[data-id="${person.id}"]`);
+  const docSnap = await getDoc(person.owner);
+  const owner = docSnap.id;
   if (li) {
     //update on screen
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
     let personName = person["name"].toLowerCase();
-    li.outerHTML = `<li data-id="${person.id}" data-name="${personName}" class="person">
+    li.outerHTML = `<li data-id="${person.id}" data-owner="${owner}" data-name="${personName}" class="person">
             <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
@@ -424,7 +448,7 @@ function showPerson(person) {
             <div class="editDelBtns">
             <button class="edit btnEditPerson">Edit</button>
             <button class="delete btnDeletePerson">Delete</button>
-            </div
+            </div>
           </li>`;
   } else {
     //add to screen
@@ -434,7 +458,7 @@ function showPerson(person) {
     }
     const dob = `${months[person["birth-month"] - 1]} ${person["birth-day"]}`;
     let personName = person["name"].toLowerCase();
-    li = `<li data-id="${person.id}" data-name="${personName}" class="person">
+    li = `<li data-id="${person.id}" data-owner="${owner}" data-name="${personName}" class="person">
             <div>
             <p class="name">${person.name}</p>
             <p class="dob">${dob}</p>
@@ -444,7 +468,10 @@ function showPerson(person) {
             <button class="delete btnDeletePerson">Delete</button>
             </div>
           </li>`;
-    document.querySelector("ul.person-list").innerHTML += li;
+    let oldLi = document.querySelector(`li[data-id="${person.id}"]`);
+    if (!oldLi) {
+      document.querySelector("ul.person-list").innerHTML += li;
+    }
     if (!selectedPersonId) {
       selectedPersonId = person.id;
     }
@@ -455,7 +482,9 @@ function showPerson(person) {
 
 async function handleSelectPerson(ev) {
   const li = ev.target.closest(".person");
-  li.click();
+  if (li) {
+    li.click();
+  }
   const id = li ? li.getAttribute("data-id") : null;
   if (id) {
     selectedPersonId = id;
