@@ -187,11 +187,12 @@ header #signOutBtn{
 
 section.people{
   padding: 1rem;
+  border-bottom: 1px solid var(--light-pink);
 }
 
 section.ideas {
   padding: 1rem;
-  border-top: 1px solid var(--light-pink);
+
 }
 section h2 {
   font-size: 2rem;
@@ -570,8 +571,8 @@ dialog.active p {
     flex-shrink: 1;
   }
 
-  section.ideas {
-    border-left: 1px solid var(--light-pink);
-    border-top:none;
+  section.people {
+    border-right: 1px solid var(--light-pink);
+    border-bottom:none;
   }
 }
