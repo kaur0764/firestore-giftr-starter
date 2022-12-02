@@ -13,7 +13,6 @@ import {
   deleteDoc,
   onSnapshot,
   orderBy,
-  connectFirestoreEmulator,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -25,7 +24,6 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { DotWave } from "@uiball/loaders";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkx8fhcF6ONfR0JfeWpsxG1dY4SlnYeVg",

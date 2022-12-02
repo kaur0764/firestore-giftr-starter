@@ -122,18 +122,24 @@ html {
 body {
   min-height: 100vh;
 }
-header,
-main {
-  padding: 1rem 4rem;
+
+header,main{
+min-width: 18rem;
+}
+
+main{
+  padding: 1rem 0rem;
+  max-width: 32rem;
+  margin: 0 auto;
 }
 header {
+  padding: 1rem 2rem;
   background-color: var(--light-pink);
   border-bottom: 0.1rem solid var(--dark-pink);
   display:flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  z-index: 100000;
   position: relative;
 }
 header h1 {
@@ -179,21 +185,13 @@ header #signOutBtn{
   display: inline;
 }
 
-main {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
+section.people{
+  padding: 1rem;
 }
-main > section {
-  flex-basis: 50%;
-  flex-grow: 1;
-  flex-shrink: 1;
-}
+
 section.ideas {
-  min-height: 100vh;
-  padding-left: 1rem;
-  border-left: 1px solid var(--light-pink);
+  padding: 1rem;
+  border-top: 1px solid var(--light-pink);
 }
 section h2 {
   font-size: 2rem;
@@ -202,8 +200,6 @@ section h2 {
   justify-content: space-between;
 }
 section h2 > button {
-  margin-right: 4rem;
-  margin-left: 0.5rem;
   padding: 0.1rem 2rem;
   border: 1px solid var(--dark-pink);
   background-color: var(--pale-pink);
@@ -217,15 +213,20 @@ section h2 > button {
 }
 ul {
   list-style: none;
+  margin: 1rem 0rem; 
 }
+
 .person-list li {
-  margin: 1rem 0;
-  padding: 0.5rem 2rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
   cursor: pointer;
+  border-radius: 5px;
 }
+
 .person-list li.selected {
   background-color: var(--very-light-pink);
 }
+
 .person-list p.name {
   font-size: 1.2rem;
   line-height: 2rem;
@@ -238,13 +239,18 @@ ul {
   color: rgb(49, 49, 49);
 }
 
+.person-list li div{
+  flex-grow: 0;
+}
+
 .idea-list li.idea {
   border: 1px solid #222;
   border-radius: var(--radii);
   margin: 1rem 0;
   display: grid;
-  grid-template-areas: 'tab top' 'tab bottom';
-  grid-template-columns: 1fr 2fr 1fr;
+  max-width: 40rem;
+  grid-template-areas: 'tab top ' 'tab bottom ' 'tab edit' 'tab delete';
+  grid-template-columns: 1fr 3fr;
   background-color: var(--very-light-pink);
   -webkit-border-radius: var(--radii);
   -moz-border-radius: var(--radii);
@@ -261,6 +267,8 @@ ul {
   background-color: #fff;
   grid-area: tab;
   align-self: center;
+  margin-right:0.5rem;
+  height: 100%;
 }
 .idea-list .idea label:has(input[type='checkbox']:checked) {
   color: #555;
@@ -309,11 +317,13 @@ dialog {
   border: 1px solid var(--light-pink);
   border-radius: var(--radii);
   overflow: hidden;
+  min-width: 16rem;
 }
 dialog.active {
   display: block;
   margin: auto;
   width: max-content;
+  max-width: 90vw;
   height: auto;
 }
 
@@ -324,11 +334,18 @@ dialog.active h2 {
 }
 dialog.active p {
   display: flex;
-  margin: 1rem 3rem;
+  margin: 1rem;
   justify-content: flex-start;
   align-items: flex-start;
+  flex-wrap: wrap;
   font-size: 1.3rem;
+  gap:0.5rem;
 }
+
+dialog p:last-child{
+justify-content: flex-end;
+}
+
 dialog.active label {
   flex-basis: 20ch;
   font-size: 1rem;
@@ -381,11 +398,29 @@ li{
   align-items: flex-start;
 }
 
-.editDelBtns{
-  flex-basis: 50%;
+li div{
   flex-grow: 0;
   flex-shrink: 1;
+  flex-basis: 0;
+}
+
+.person-list li div:first-child{
+  width: calc(100% - 11.25rem)
+}
+
+.idea-list p{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.editDelBtns{
   justify-self: flex-end;
+  text-align: right;display: flex;
+  flex-direction: column;
+}
+
+.editDelBtns button{
+  margin-right: 0;
 }
 
 .btnEditGift.edit{
@@ -393,10 +428,20 @@ align-self: end;
 margin-bottom: 0.5rem;
 }
 
+.btnEditGift{
+  grid-area:edit;
+}
+
+.btnDeleteGift {
+    grid-area: delete;
+}
+
 .btnEditGift,
 .btnDeleteGift{
   margin: 0;
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  justify-self: end;
 }
 
 #btnCloseSignInDlg{
@@ -415,7 +460,6 @@ margin-bottom: 0.5rem;
   border: 1px solid #222;
   border-radius: var(--radii);
   background-color: var(--very-light-pink);
-  margin: 1rem;
   padding: 0.5rem 2rem;
 }
 
@@ -476,5 +520,58 @@ margin-bottom: 0.5rem;
 
   100% {
     stroke-dashoffset: -124px;
+  }
+}
+
+@media only screen and (min-width: 26.5em) {
+  .idea-list li.idea {
+    grid-template-areas: 'tab top top' 'tab bottom bottom' 'tab edit delete';
+    grid-template-columns: 1fr 2fr 2fr;
+  }
+  .btnEditGift,
+  .btnDeleteGift {
+    justify-self: center;
+  }
+}
+
+@media only screen and (min-width: 30em) {
+  header {
+    z-index: 100000;
+  }
+}
+
+@media only screen and (min-width: 38em) {
+dialog.active p {
+
+  margin: 1rem 3rem;
+    flex-wrap:nowrap;
+  }
+    .idea-list li.idea {
+        grid-template-areas: 'tab top edit' 'tab bottom delete';
+        grid-template-columns: 1fr 3fr;
+    }
+}
+
+@media only screen and (min-width: 62em) {
+  main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width:none;
+    padding: 1rem 0rem;
+  }
+
+  
+  main>section {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  section.ideas {
+    border-left: 1px solid var(--light-pink);
+    border-top:none;
   }
 }
