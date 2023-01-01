@@ -12,7 +12,6 @@ import {
   getDoc,
   deleteDoc,
   onSnapshot,
-  orderBy,
 } from "firebase/firestore";
 import {
   getAuth,
