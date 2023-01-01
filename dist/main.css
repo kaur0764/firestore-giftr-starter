@@ -362,6 +362,7 @@ dialog.active :is(input, button) {
 #dlgNotSignedIn.active{
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 dialog button {
