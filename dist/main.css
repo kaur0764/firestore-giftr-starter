@@ -228,7 +228,7 @@ ul {
   background-color: var(--very-light-pink);
 }
 
-.person-list p.name {
+.person-list h3.name {
   font-size: 1.2rem;
   line-height: 2rem;
   color: #222;
@@ -278,7 +278,7 @@ ul {
   accent-color: var(--light-pink);
 }
 
-.idea-list p.title {
+.idea-list h3.title {
   font-size: 1.2rem;
   line-height: 2rem;
   padding: 0.5rem;

@@ -439,7 +439,7 @@ async function showPerson(person) {
     let personName = person["name"].toLowerCase();
     li.outerHTML = `<li data-id="${person.id}" data-owner="${owner}" data-name="${personName}" class="person">
             <div>
-            <p class="name">${person.name}</p>
+            <h3 class="name">${person.name}</h3>
             <p class="dob">${dob}</p>
             </div>
             <div class="editDelBtns">
@@ -457,7 +457,7 @@ async function showPerson(person) {
     let personName = person["name"].toLowerCase();
     li = `<li data-id="${person.id}" data-owner="${owner}" data-name="${personName}" class="person">
             <div>
-            <p class="name">${person.name}</p>
+            <h3 class="name">${person.name}</h3>
             <p class="dob">${dob}</p>
             </div>
             <div class="editDelBtns">
@@ -541,7 +541,7 @@ function buildIdeas(ideas) {
 
                 <label for="chk-${idea.id}">
                 <input type="checkbox" id="chk-${idea.id}" class="checkbox"/> Bought</label>
-                <p class="title">${idea.title}</p>
+                <h3 class="title">${idea.title}</h3>
                 <p class="location">${idea.location}</p>
                 <button class="edit btnEditGift">Edit</button>
                 <button class="delete btnDeleteGift">Delete</button>
