@@ -370,7 +370,7 @@ dialog button {
   padding: 0.2rem 2rem;
   border: 1px solid var(--dark-pink);
   color: #ffffff;
-  background-color: var(--light-pink);
+  background-color: #b85673;
   border-radius: var(--radii);
   cursor: pointer;
 }
